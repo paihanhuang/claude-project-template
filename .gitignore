@@ -1,0 +1,18 @@
+# Transient state
+.claude/plans/.approved
+.claude/plans/.stage
+.claude/plans/current.md
+.claude/plans/session-state.md
+.claude/settings.local.json
+.claude/index/
+.claude/agent-memory/
+.claude/worktrees/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
