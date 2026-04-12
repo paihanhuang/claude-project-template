@@ -42,6 +42,10 @@ For detailed phase steps, read `.claude/docs/workflow-reference.md` on demand. F
 
 If the task involves a large codebase or many documents, scan relevant sources and write structured index files to `.claude/index/` before spawning agents. Check staleness before reuse. Skip for tasks scoped to 1-3 known files.
 
+## Plan Archival
+
+When a detailed plan is proposed (Phase 1 design, architecture decisions, implementation plans), save it to `.claude/plans/` with a unique, descriptive filename (e.g., `auth-middleware-redesign-2026-04-12.md`). Never overwrite `current.md` without archiving first. This ensures users can always reference back to any prior plan.
+
 ## Approval Gate
 
 A `PreToolUse` hook blocks `Write`/`Edit` on project files unless `.claude/plans/.approved` exists. Gate artifacts (`.approved`, `.stage`) are themselves protected — agents cannot self-approve. Writes to `.claude/` working directories (plans, index, agent-memory) are allowed. Markdown files outside source directories are allowed without approval (non-coding tasks). This is a hard gate — prompt instructions cannot bypass it.
