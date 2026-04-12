@@ -1,0 +1,34 @@
+# Build artifacts
+dist/
+build/
+out/
+.next/
+.nuxt/
+
+# Dependencies
+node_modules/
+vendor/
+.venv/
+__pycache__/
+
+# Large/binary files
+*.min.js
+*.min.css
+*.map
+*.wasm
+*.sqlite
+*.db
+
+# Package lock files (large, low signal)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+Gemfile.lock
+poetry.lock
+Cargo.lock
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store

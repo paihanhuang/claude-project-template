@@ -24,11 +24,13 @@ Pass artifacts (designs, code, plans) **verbatim** to agents — never summarize
 
 ## Workflow Routing
 
-| Request Type | Workflow | Details |
-|---|---|---|
-| Coding task | Phase 0 -> 0.5 -> 1 (Design) -> 2&3 (Implement+Verify) | @.claude/docs/workflow-reference.md |
-| Non-coding (question, exploration) | Phase 0 -> direct response | -- |
-| Infrastructure review | Phase 0 -> Review Flow | @.claude/docs/workflow-reference.md |
+| Request Type | Workflow |
+|---|---|
+| Coding task | Phase 0 -> 0.5 -> 1 (Design) -> 2&3 (Implement+Verify) |
+| Non-coding (question, exploration) | Phase 0 -> direct response |
+| Infrastructure review | Phase 0 -> Review Flow |
+
+For detailed phase steps, read `.claude/docs/workflow-reference.md` on demand. For agent prompt templates, read `.claude/docs/prompt-templates.md` on demand. Do NOT load these every session — only read them when entering Phase 1+ or spawning agents.
 
 ### Phase 0: Clarity Gate
 
@@ -40,11 +42,9 @@ Pass artifacts (designs, code, plans) **verbatim** to agents — never summarize
 
 If the task involves a large codebase or many documents, scan relevant sources and write structured index files to `.claude/index/` before spawning agents. Check staleness before reuse. Skip for tasks scoped to 1-3 known files.
 
-Agent prompt templates: @.claude/docs/prompt-templates.md
-
 ## Approval Gate
 
-A `PreToolUse` hook blocks `Write`/`Edit` on project files unless `.claude/plans/.approved` exists. Writes to `.claude/` are always allowed. This is a hard gate — prompt instructions cannot bypass it.
+A `PreToolUse` hook blocks `Write`/`Edit` on project files unless `.claude/plans/.approved` exists. Gate artifacts (`.approved`, `.stage`) are themselves protected — agents cannot self-approve. Writes to `.claude/` working directories (plans, index, agent-memory) are allowed. Markdown files outside source directories are allowed without approval (non-coding tasks). This is a hard gate — prompt instructions cannot bypass it.
 
 ## Session Continuity
 
@@ -58,3 +58,12 @@ A `PreToolUse` hook blocks `Write`/`Edit` on project files unless `.claude/plans
 **Before ending** — if the user says they're done, write a brief context summary to `.claude/plans/session-state.md` covering: what was accomplished, what's pending, any decisions or blockers. This supplements the auto-saved state with your understanding of the work.
 
 When compacting, preserve: the full list of modified files, current workflow phase, and all unresolved decisions.
+
+## Verification
+
+This template does not include a built-in verification script. Projects should add their own `verify.sh` and a PostToolUse hook to run it after file edits. Use the OS-agnostic timeout pattern:
+```bash
+TIMEOUT_CMD=$(command -v timeout 2>/dev/null || command -v gtimeout 2>/dev/null || echo "")
+VERIFY_TIMEOUT="${VERIFY_TIMEOUT:-30}"
+if [[ -n "$TIMEOUT_CMD" ]]; then $TIMEOUT_CMD "$VERIFY_TIMEOUT" ./verify.sh; else ./verify.sh; fi
+```
