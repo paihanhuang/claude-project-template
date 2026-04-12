@@ -33,20 +33,39 @@ All templates end with: `Include the ## Memory Entry block.`
 - **Prior Stage Output:** {summary of what was implemented in previous stages, if any}
 - **Deliverable:** Implement this stage exactly per the plan. No deviations.
 
-## QA -- Review Mode
+## QA-Robustness -- Review Mode
 
 - **Mode:** `You are in REVIEW MODE.`
 - **Design Under Review:** {Architect's design proposal -- verbatim, not summarized}
-- **Focus:** Testability gaps, missing acceptance criteria, edge cases, failure modes.
-- **Deliverable:** QA review per output format.
+- **Focus:** Testability gaps, missing acceptance criteria, edge cases, failure modes, input handling gaps, order-of-operations vulnerabilities, regression risks from feature interactions.
+- **Boundary Crossing:** If you find efficiency/performance/UX issues, report them tagged with `[out-of-scope: quality]`.
+- **Deliverable:** Robustness review per output format.
 
-## QA -- Verification Mode
+## QA-Quality -- Review Mode
+
+- **Mode:** `You are in REVIEW MODE.`
+- **Design Under Review:** {Architect's design proposal -- verbatim, not summarized}
+- **Focus:** Performance risks, resource usage concerns, UX degradation paths, efficiency gaps, quality regression risks from feature interactions.
+- **Boundary Crossing:** If you find functional correctness/edge case/failure mode issues, report them tagged with `[out-of-scope: robustness]`.
+- **Deliverable:** Quality review per output format.
+
+## QA-Robustness -- Verification Mode
 
 - **Mode:** `You are in VERIFICATION MODE.`
 - **Approved Plan:** {full content of .claude/plans/current.md -- verbatim}
-- **Current Stage:** Stage {N}: {stage title} / Acceptance Criteria: {list from plan}
+- **Current Stage:** Stage {N}: {stage title} / Robustness Acceptance Criteria: {list from plan}
 - **Implementation Diff:** {git diff or file changes from Engineer's implementation}
-- **Deliverable:** Verify this stage against acceptance criteria.
+- **Boundary Crossing:** If you find efficiency/performance/UX issues, report them tagged with `[out-of-scope: quality]`.
+- **Deliverable:** Verify this stage against robustness acceptance criteria.
+
+## QA-Quality -- Verification Mode
+
+- **Mode:** `You are in VERIFICATION MODE.`
+- **Approved Plan:** {full content of .claude/plans/current.md -- verbatim}
+- **Current Stage:** Stage {N}: {stage title} / Quality Acceptance Criteria: {list from plan}
+- **Implementation Diff:** {git diff or file changes from Engineer's implementation}
+- **Boundary Crossing:** If you find functional correctness/edge case/failure mode issues, report them tagged with `[out-of-scope: robustness]`.
+- **Deliverable:** Verify this stage against quality acceptance criteria.
 
 ## Engineer -- Infrastructure Review Mode
 
@@ -56,10 +75,13 @@ All templates end with: `Include the ## Memory Entry block.`
 - **Focus:** Missed maintainability risks, implementation gaps, efficiency concerns, practical issues overlooked.
 - **Deliverable:** Engineering review per output format.
 
-## QA -- Infrastructure Review Mode
+## QA-Robustness -- Infrastructure Review Mode
 
 - **Mode:** `You are in REVIEW MODE (Infrastructure).`
 - **Analysis Under Review:** {Orchestrator's analysis -- verbatim, not summarized}
 - **Scope:** {area being reviewed: hooks, agents, settings, workflow, etc.}
 - **Focus:** Missed failure modes, edge cases in workflow enforcement, robustness gaps, silent bypass scenarios.
-- **Deliverable:** QA review per output format.
+- **Boundary Crossing:** If you find efficiency/performance/UX issues, report them tagged with `[out-of-scope: quality]`.
+- **Deliverable:** QA robustness review per output format.
+
+Note: QA-Quality does not participate in infrastructure reviews (no meaningful UX/performance surface). Only QA-Robustness is spawned for infrastructure review cross-critique.

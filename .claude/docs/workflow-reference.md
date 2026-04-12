@@ -57,10 +57,11 @@ Used for infrastructure reviews, setup audits, and configuration critique. Light
 Scan relevant files and produce an initial assessment with findings and recommendations organized by severity.
 
 **Step 2 -- Cross-critique.**
-Spawn `engineer` and `qa` agents **in parallel** (review mode).
+Spawn `engineer` and `qa-robustness` agents **in parallel** (review mode).
+- `qa-quality` is **not spawned** for infrastructure reviews (no meaningful UX/performance surface).
 - Pass the orchestrator's analysis **verbatim** -- do not summarize.
 - Engineer evaluates for: maintainability risks, implementation gaps, efficiency concerns.
-- QA evaluates for: failure modes, edge cases, robustness gaps, silent bypass scenarios.
+- QA-Robustness evaluates for: failure modes, edge cases, robustness gaps, silent bypass scenarios.
 - Verify `## Memory Entry` blocks exist -- if missing, reject and re-spawn.
 - Write memory entries to each agent's memory.
 
@@ -84,16 +85,17 @@ Spawn `architect` agent with the user request and relevant codebase context (or 
 - Write the memory entry to the architect's agent memory.
 
 **Step 2 — Engineer + QA cross-critique.**
-Spawn `engineer` and `qa` agents **in parallel** with the Architect's design proposal.
+Spawn `engineer`, `qa-robustness`, and `qa-quality` agents **in parallel** with the Architect's design proposal.
 - Prompt must specify: **review mode** (no code, critique only)
 - Pass the Architect's design proposal **verbatim** — do not summarize.
-- Receive critiques. Verify `## Memory Entry` blocks exist — if missing, reject and re-spawn.
+- Receive critiques. Verify `## Memory Entry` blocks exist from all three agents — if any is missing, reject and re-spawn that agent.
 - Write memory entries to each agent's memory.
 
 **Step 3 — Orchestrator synthesizes.**
-Review all three agent outputs. For each critique point:
+Review all four agent outputs (architect + engineer + qa-robustness + qa-quality). For each critique point:
 - If valid: incorporate into the design
 - If invalid: dismiss with explicit reasoning
+- If qa-robustness and qa-quality raise conflicting concerns: orchestrator arbitrates with explicit reasoning
 
 Produce a **Final Proposal** containing:
 - Problem Restatement
@@ -101,7 +103,7 @@ Produce a **Final Proposal** containing:
 - Architecture Design (component boundaries, interfaces, data flow)
 - Technical Stack (with rationale)
 - Stage-Based Implementation Plan
-- QA Plan (acceptance criteria per stage)
+- QA Plan (acceptance criteria per stage — split into robustness criteria and quality criteria)
 - Rationale behind key design decisions
 - Addressed Critiques (what was raised, what was changed or dismissed, and why)
 
@@ -134,18 +136,22 @@ Spawn `engineer` agent with:
 - Review implementation against the stage's scope in the approved plan.
 - If non-compliant: re-spawn engineer with specific feedback on what deviates.
 
-**Step 3 — QA verifies the stage.**
-Spawn `qa` agent with:
+**Step 3 — Dual QA verification.**
+Spawn `qa-robustness` and `qa-quality` agents **in parallel** with:
 - The approved plan from `.claude/plans/current.md`
-- The **current stage number and its acceptance criteria**
+- The **current stage number and its acceptance criteria** (robustness criteria to qa-robustness, quality criteria to qa-quality)
 - The implementation diff for this stage
 - Prompt must specify: **verification mode**
 
+**Spawn checkpoint:** The orchestrator must confirm output is received from **both** QA agents before proceeding. If only one output is received, re-spawn the missing agent before evaluating verdicts.
+
 **Step 4 — Orchestrator processes stage results.**
-- Verify `## Memory Entry` block exists — if missing, reject and re-spawn.
-- Write memory entry to the qa's agent memory.
-- If verdict is **pass**: proceed to next stage.
-- If verdict is **fail**: spawn engineer to fix identified issues, then re-spawn qa to verify. Loop until pass.
+- Verify `## Memory Entry` blocks exist from both QA agents — if either is missing, reject and re-spawn that agent.
+- Write memory entries to each agent's memory.
+- **Dual-verdict gate:** Both QA agents must emit `pass` for the stage to proceed.
+  - If **both pass**: proceed to next stage.
+  - If **either fails**: spawn engineer to fix identified issues from the failing agent(s), then re-spawn **both** QA agents to verify (qa-robustness re-runs even if it previously passed, to catch regressions introduced by the fix). Loop until both pass.
+- Route any `[out-of-scope]` findings to the appropriate QA agent's memory for future reference.
 
 **Step 5 — Orchestrator refreshes context indexes.**
 Before starting the next stage, check if any index files in `.claude/index/` are stale (source files modified by the current stage's implementation). Re-index affected areas before proceeding.
