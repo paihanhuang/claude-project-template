@@ -81,7 +81,9 @@ User approves which recommendations to implement. Implementation of approved cha
 **Step 1 — Architect designs.**
 Spawn `architect` agent with the user request and relevant codebase context (or index files).
 - Prompt must specify: **design mode**
+- Include **Research Hints** if the task has known patterns or technologies worth investigating (optional — the architect will research regardless, but hints focus the search).
 - Receive design proposal. Verify `## Memory Entry` block exists — if missing, reject and re-spawn.
+- Verify the `### Research Findings` section cites real sources — if empty or absent, reject and re-spawn.
 - Write the memory entry to the architect's agent memory.
 
 **Step 2 — Engineer + QA cross-critique.**

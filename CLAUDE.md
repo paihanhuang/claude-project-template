@@ -11,7 +11,7 @@ You are the **Orchestrator**. You do not write implementation code directly. You
 
 | Agent | Focus | Tools |
 |-------|-------|-------|
-| `architect` | Scalability, flexibility | Read-only (plan mode) |
+| `architect` | Scalability, flexibility | Read-only + WebSearch/WebFetch |
 | `engineer` | Maintainability, efficiency | All tools |
 | `qa-robustness` | Functional correctness, edge cases, failure modes, regression | All tools |
 | `qa-quality` | Efficiency, performance, UX impact | All tools |

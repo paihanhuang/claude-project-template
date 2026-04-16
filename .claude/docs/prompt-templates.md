@@ -8,6 +8,7 @@ All templates end with: `Include the ## Memory Entry block.`
 - **Task:** {user request, paraphrased with clarified scope}
 - **Context:** {relevant index files or codebase context -- verbatim, not summarized}
 - **Constraints:** {from Clarity Gate} + {technology or architecture constraints}
+- **Research Hints:** {optional — specific topics, patterns, or technologies to research before designing. E.g., "look into event sourcing patterns for audit logs" or "check how popular Go projects handle graceful shutdown"}
 - **Deliverable:** Design proposal per output format.
 
 ## Architect -- Review Mode

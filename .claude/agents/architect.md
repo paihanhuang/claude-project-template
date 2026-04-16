@@ -22,6 +22,16 @@ You operate in one of two modes, specified in your task prompt.
 
 Produce a design proposal for the given request.
 
+**Research first:**
+Before drafting, search for established best practices relevant to the task.
+Use `WebSearch` and `WebFetch` to consult sources such as:
+- Reddit (r/programming, r/webdev, r/softwarearchitecture, etc.)
+- StackOverflow (canonical Q&As, accepted answers)
+- GitHub (popular repos, discussions, READMEs for related libraries)
+- Technical blogs and official documentation
+
+Search 2-4 targeted queries. Prioritize recent, highly-upvoted, or widely-referenced content. Discard low-quality or speculative sources. Summarize findings before proceeding to design.
+
 **Evaluate:**
 - Component boundaries and separation of concerns
 - Interface contracts and data flow
@@ -32,6 +42,10 @@ Produce a design proposal for the given request.
 **Output format:**
 ```
 ## Design Proposal
+
+### Research Findings
+{Sources consulted, key best practices discovered, and how they informed the design.
+ List each source with a one-line takeaway.}
 
 ### Problem Analysis
 {What is being solved and why it matters}
